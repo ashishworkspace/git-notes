@@ -1,0 +1,174 @@
+Git and GitHub Notes
+--------------------
+
+> Git has DVCS and GitHub has CVCS System
+    DVCS = Distributed Version Control System
+    CVCS = Centralize Version Control System
+> Local System on which we work is known as WorkStation or WIP (Work In Progress)
+
+> SCM stands for Source Code Management
+Git is one of the product that provides SCM.
+
+> Take an example
+ 
+line1    [27-02-2021] first_line       (add)
+line2    [28-02-2021] second_line      (add)
+line3    [28-02-2021] third_line       (add)
+line4    [01-03-2021] fourth_line      (add)
+---------------------------------------------------------------
+	     [01-03-2021] creating snapshot (in general backup)
+---------------------------------------------------------------
+line2    [02-03-2021] new_second_line  (edit)
+line3    [02-03-2021] third_line       (delete)
+---------------------------------------------------------------
+	     [02-03-2021] creating snapshot 
+---------------------------------------------------------------
+
+> Now we have two snapshot/versions 1st one is  on day [01-03-2021] and other on day [02-03-2021]
+
+	Note: WE CAN GET OUR EARLIER CODE BACK ON DATE [02-03-2021] since we have already created snapshot on [01-03-2021]
+	  This concept is known as Roll Back.
+
+> Snapshot is also known as point in time backup.
+
+> Their are mainly 2 area where our code reside. 
+	1st is WorkSpace => Working Area
+	2nd is Commit Area 
+	Note: But their is one more area called Staging Area which reside between WorkSpace and Commit Area.
+
+> Use of Staging Area => It keeps track of the file in working area i.e.
+	if something is edited/deleted/appended.
+  Staging area create 'index' file just like database to store edit/delete/append 
+
+> For tracking a file using staging area we need to add the file first from Working area to the Staging Area.
+		command =>  { git add file_name }
+
+> Staging area track the line using Marker. Every line is associated with one
+  marker that helps to keep track of files 
+
+> Suppose we have 2 files on 1st jan with snapshot:v1 and we add 1 more file on 2nd jan
+  and now we need to create new snapshot of all the three items.
+  (In that case the last file will be pointing to the first 2 files) for creating 2nd snapshot:v2
+
+	
+  | file1 | + | file2 | <------- | file3 |  =  | file1 | + | file2 | + | file3 |
+   
+> This also proves that every snapshot is pointing to each other.
+
+> How to use Git
+ 1st we need to create git repo that keeps information about staging area as well as commit area
+ 	For this we have the command: { git init   path_of_directory }	
+	This command will create .git repo 
+ 2nd we have to add our files to staging area
+    command: { git add   path_of_directory or file_name }
+    # git add we do only for time
+ 3rd and last step is to commit
+    command: { git commit -m "some comment"  path_of_directory or file_name }
+    	# version name is provided by git, but we need to provide comment
+    	# comment help in rolling back because by version name you cannot remember the commit 
+    	# so git made the comment necessary for every commit we do
+
+> git status is command used to check track(add/edit/modified) for the file in the given directory. It is also used to check whether file is commited or not to commit area.
+  
+  (git add file/directory) ? tracked : untracked
+
+> { git log } is command used to get all the version in commit area
+  { git log --oneline } is command to display log in one line
+
+> git snapshot version are pointed by a HEAD pointer always
+	# you can see this using { git log } command
+ 
+
+This is the data generated after three time commit 
+
+		$ git  log
+			commit 4cacf92a50d79bdffddfcba5e (HEAD -> master)  # HEAD Always points to last commit version
+			Author: Ashish <ashishizofficial@gmail.com>
+			Date:   Sun Feb 28 20:46:14 2021 +0530
+
+			    third local commit
+
+			commit d3f71d8ca67525bec58da60c8
+			Author: Ashish <ashishizofficial@gmail.com>
+			Date:   Sun Feb 28 17:31:43 2021 +0530
+
+			    second local commit
+
+			commit d2b6ffec2e2fa76af6d3df43d
+			Author: Ashish <ashishizofficial@gmail.com>
+			Date:   Sun Feb 28 15:37:13 2021 +0530
+
+			    first local commit
+
+
+> IF WE WANT TO ROLLBACK TO SOME PREVIOUS VERSION OR MOVE FORWARD WE USE 
+  { git reset some-previous-version-commit-it file_name  +   git checkout -- file_name }
+	
+	eg:- From the data above
+
+	 $ git reset d2b6ffec oops.py    # this will rollback to first commit id i.e "first local commit"
+	 $ git checkout -- oops.py       
+
+> Branches in git 
+ 	We can have multiple branch in git. By default branch is master branch.
+ 	Feature branch is known as upstream branch  in which developer works. Feature branch can 'merge' with  master branch after the Project completed.
+
+ 	Note:- Merge  means copying history/version information from one-branch to other-branch 
+
+    { git branch } is the command used to get present working branch
+
+    to create a new branch we use { git checkout -b new-branch/feature-branch }. This command will not only create a new-branch but also copy/link the history/version to new-branch 
+    	eg:- git checkout -b devloper 
+
+> To move from one branch to other we use { git checkout branch-name } 
+
+> suppose you are in master branch and want to merge devloper branch version
+  we use { git merge branch-name }
+  eg: git merge devloper
+  Note: This merge may lead to conflict between two versions. 
+
+> We can set tracker for any feature branch or Upstream branch
+  using command: { git branch --set-upstream-to branch-name }
+  This gonna help master-branch when the devloper-branch commit something.
+
+----------------------------------------------------------------------------------------------------------
+
+> github is a cloud that provide CVCS (centralized version control system). It provide the facility to create both type public as well as private repo.  
+
+> creating repo/directory in github is of two type
+	1>   without .git repo       i.e. without initilize git repo 
+	2>   with .git repo		     i.e. with initilize git repo
+
+> we must not initilize repo in github if we already have initilize git repo in local system
+	Note: Because this may lead to conflict
+
+> To confirm that your local system is connect to github
+	command: { git remote -v }
+
+> To add the location of remote system so that our local system can connect to github
+	command: { git add remote some_name  git_repolocation }
+	eg:-  git add remote fileadd https://github.com/ashishworkspace/git-practice.git
+
+> To push versions to the remote system 
+	command: { git push some_name branch_name } 	 # because very branch can have different versions
+	eg:- git push fileadd master
+
+> To pull version from remote to local we use 
+	command: { git pull some_name branch_name}
+	eg:- git pull filladd master
+
+> We can use tracker of gitHub to the local system master branch by using 
+	command: { git branch --set-upstream-to=some_name/master master } 
+	eg:- git branch --set-upstream-to=fileadd/master master
+
+> git fetch is  better command than git pull because fetch download the version from github
+whereas pull download and merge the version which may lead to conflict between versions.
+
+> { git show version } is command used to view data of the particular version
+
+> { git diff version:1 version:2 } is to comapare two versions
+
+> to clone a repo from gitHub 
+       command: { git clone path-of-gitHub-repo }
+       eg:- git clone https://github.com/ashishworkspace/git-practice.git
+
